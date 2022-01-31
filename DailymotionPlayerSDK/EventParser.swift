@@ -104,12 +104,16 @@ final class EventParser {
   private static func parseEventAndParameters(from: String) -> [String: String] {
     let splitedEvents = from.components(separatedBy: "&").map({ $0.components(separatedBy: "=") })
     var eventAndParameters: [String: String] = [:]
-    for entry in splitedEvents {
-      if let key = entry.first, let value = entry.last, !key.isEmpty, !value.isEmpty {
-        eventAndParameters[key] = value
+      for entry in splitedEvents {
+          if let key = entry.first, let value = entry.last, !key.isEmpty, !value.isEmpty {
+              if let oldValue = eventAndParameters[key] {
+                  eventAndParameters[key] = oldValue.appending("|\(value)")
+              } else {
+                  eventAndParameters[key] = value
+              }
+          }
       }
-    }
-    return eventAndParameters
+      return eventAndParameters
   }
   
   private static func parseTime(from eventAndParameters: [String: String]) -> Double? {
